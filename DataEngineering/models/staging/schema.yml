@@ -2,8 +2,6 @@ sources:
   - name: staging
     database: DFA23RAWDATA
     schema: RAWDATA
-
-    
     tables:
       - name: CROPDATARAW
       - name: IRRIGATIONDATARAW
