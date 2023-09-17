@@ -81,7 +81,7 @@ pest_data_index_creation AS (
 ),
 
 -- Select data types of each column
-final_tb AS (
+pest_data_dtype_format AS (
     SELECT
         DATE_TRUNC('minute', TO_TIMESTAMP(TIMESTAMP, 'MM/DD/YYYY HH24:MI')) AS TIMESTAMP,
         CAST(PEST_ID AS VARCHAR(4)) AS PEST_ID,
@@ -90,6 +90,17 @@ final_tb AS (
         CAST(PEST_SEVERITY AS VARCHAR(8)) AS PEST_SEVERITY
     FROM
         pest_data_index_creation
+),
+
+-- Get daily summary
+final_tb AS (
+    SELECT 
+        TIMESTAMP, 
+        PEST_DESCRIPTION, PEST_SEVERITY, PEST_TYPE, PEST_ID
+    FROM 
+        pest_data_dtype_format
+    GROUP BY 
+        TIMESTAMP, PEST_DESCRIPTION, PEST_SEVERITY, PEST_TYPE, PEST_ID 
 )
 
 

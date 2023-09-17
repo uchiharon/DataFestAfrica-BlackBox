@@ -44,19 +44,35 @@ sensor_data_str_format AS (
 
 
 -- format field data types
-final_tb AS(
+sensor_data_dtype_format AS(
     SELECT
         
         CAST(SENSOR_ID AS VARCHAR(8)) AS SENSOR_ID,
         DATE_TRUNC('minute', TO_TIMESTAMP(TIMESTAMP, 'YYYY-MM-DD HH24:MI:SS')) AS TIMESTAMP,
         CAST(TEMPERATURE AS NUMERIC(5,1)) AS TEMPERATURE,
         CAST(HUMIDITY AS NUMERIC(5,1)) AS HUMIDITY,
-        CAST(SOIL_MOISTURE AS NUMERIC(5,1)) AS SOIL_MOISTURE,
+        CAST(SOIL_MOISTURE AS VARCHAR(8)) AS SOIL_MOISTURE,
         CAST(LIGHT_INTENSITY AS NUMERIC(5,0)) AS LIGHT_INTENSITY,
         CAST(BATTERY_LEVEL AS NUMERIC(5,1)) AS BATTERY_LEVEL
         
     FROM
         sensor_data_str_format
+),
+
+-- Convert to daily value
+final_tb AS (
+    SELECT 
+        DATE(TIMESTAMP) AS TIMESTAMP, 
+        SENSOR_ID,  
+        AVG(TEMPERATURE) AS AVG_TEMPERATURE, 
+        AVG(HUMIDITY) AS AVG_HUMIDITY, 
+        AVG(SOIL_MOISTURE) AS AVG_SOIL_MOISTURE,
+        AVG(LIGHT_INTENSITY) AS AVG_LIGHT_INTENSITY, 
+        AVG(BATTERY_LEVEL) AS AVG_BATTERY_LEVEL
+    FROM 
+        sensor_data_dtype_format
+    GROUP BY 
+        DATE(TIMESTAMP), SENSOR_ID
 )
 
 -- query final table

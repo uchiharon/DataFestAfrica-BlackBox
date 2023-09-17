@@ -29,7 +29,8 @@ location_data_without_na AS (
 
 location_data_str_format AS (
     SELECT
-        TRIM(SPLIT_PART(SPLIT_PART(REPLACE(SENSOR_ID,'""',''), '_##', 1), '_', 2)) AS SENSOR_ID, 
+        TRIM(SPLIT_PART(SPLIT_PART(REPLACE(SENSOR_ID,'""',''), '_##', 1), '_', 2)) AS SENSOR_ID,
+        TRIM(REPLACE(SPLIT_PART(REPLACE(SENSOR_ID,'""',''), '_##', 2), '**', '')) AS LOCATION_ID, 
         TRIM(LOCATION_NAME) AS LOCATION_NAME, 
         TRIM(LATITUDE) AS LATITUDE, 
         TRIM(LONGITUDE) AS LONGITUDE, 
@@ -43,6 +44,7 @@ location_data_str_format AS (
 final_tb AS (
     SELECT
         CAST(SENSOR_ID AS VARCHAR(8)) AS SENSOR_ID,
+        CAST(LOCATION_ID AS VARCHAR(8)) AS LOCATION_ID,
         CAST(LOCATION_NAME AS VARCHAR(16)) AS LOCATION_NAME,
         CAST(LATITUDE AS NUMERIC(15,9)) AS LATITUDE,
         CAST(LONGITUDE AS NUMERIC(15,9)) AS LONGITUDE,

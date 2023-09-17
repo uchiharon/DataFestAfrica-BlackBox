@@ -53,7 +53,7 @@ FROM
 ),
 
 -- format the table dtype
-final_tb AS (
+weather_data_dtype_format AS (
     SELECT
         DATE_TRUNC('minute', TO_TIMESTAMP(TIMESTAMP, 'MM/DD/YYYY HH24:MI')) AS TIMESTAMP,
         CAST(WEATHER_CONDITION AS VARCHAR(16)) AS WEATHER_CONDITION,
@@ -61,6 +61,17 @@ final_tb AS (
         CAST(PRECIPITATION AS NUMERIC(10,2)) AS PRECIPITATION        
     FROM
         weather_data_spelling_correction
+),
+
+-- Convert to Daily equivalent
+final_tb AS (
+    SELECT 
+        DATE(TIMESTAMP), WEATHER_CONDITION, AVG(WIND_SPEED) AS AVG_WIND_SPEED, 
+        AVG(PRECIPITATION) AS AVG_PRECIPITATION
+    FROM 
+        weather_data_dtype_format
+    GROUP BY 
+        DATE(TIMESTAMP), WEATHER_CONDITION
 )
 
 -- query final result

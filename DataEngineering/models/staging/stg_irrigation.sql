@@ -31,6 +31,7 @@ irrigation_data_without_na AS (
 irrigation_data_str_format AS (
     SELECT
         TRIM(SPLIT_PART(SPLIT_PART(REPLACE(SENSOR_ID,'""',''), '_##', 1), '_', 2)) AS SENSOR_ID, 
+        TRIM(REPLACE(SPLIT_PART(REPLACE(SENSOR_ID,'""',''), '_##', 2),'**','')) AS LOCATION_ID, 
         TRIM(TIMESTAMP) AS TIMESTAMP, 
         TRIM(IRRIGATION_METHOD) AS IRRIGATION_METHOD, 
         TRIM(WATER_SOURCE) AS WATER_SOURCE, 
@@ -43,6 +44,7 @@ irrigation_data_str_format AS (
 irrigation_data_spelling_correction AS(
     SELECT
         SENSOR_ID,
+        LOCATION_ID,
         TIMESTAMP,
         CASE
             WHEN IRRIGATION_METHOD = 'Spinkler' THEN 'Sprinkler'
@@ -69,9 +71,10 @@ irrigation_data_index_creation AS (
 ),
 
 -- Format each column dtype
-final_tb AS (
+irrigation_data_dtype_format AS (
     SELECT
         CAST(SENSOR_ID AS VARCHAR(8)) AS SENSOR_ID,
+        CAST(LOCATION_ID AS VARCHAR(8)) AS LOCATION_ID,
         DATE_TRUNC('minute', TO_TIMESTAMP(TIMESTAMP, 'MM/DD/YYYY HH24:MI')) AS TIMESTAMP,
         CAST(IRRIGATION_ID AS VARCHAR(4)) AS IRRIGATION_ID,
         CAST(IRRIGATION_METHOD AS VARCHAR(16)) AS IRRIGATION_METHOD,
@@ -79,6 +82,17 @@ final_tb AS (
         CAST(IRRIGATION_DURATION_MIN AS NUMERIC(5,0)) AS IRRIGATION_DURATION_MIN
     FROM
         irrigation_data_index_creation
+),
+
+-- Convert to daily measurement
+final_tb AS (
+    SELECT 
+        DATE(TIMESTAMP), SENSOR_ID, LOCATION_ID, IRRIGATION_ID, IRRIGATION_METHOD, WATER_SOURCE,
+        SUM(IRRIGATION_DURATION_MIN) AS TOTAL_IRRIGATION_DURATION_MIN
+    FROM 
+        irrigation_data_dtype_format
+    GROUP BY 
+        DATE(TIMESTAMP), SENSOR_ID, LOCATION_ID, IRRIGATION_ID, IRRIGATION_METHOD, WATER_SOURCE
 )
 
 -- Query final table

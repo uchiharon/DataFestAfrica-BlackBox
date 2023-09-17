@@ -1,10 +1,9 @@
 {{config(materialized='view')}}
 
-
 -- Load the crops raw data
 WITH crop_data as (
     SELECT * 
-    FROM {{SOURCE('staging','CROPDATARAW')}}
+    FROM {{source('staging','CROPDATARAW')}}
 ),
 
 -- Remove rows with null
@@ -26,7 +25,7 @@ crop_data_trimmed as (
     FROM
         crop_data_without_null
 
-)
+),
 
 
 -- remove rows with na
@@ -59,17 +58,41 @@ crop_data_with_correct_spelling as (
         crop_data_without_na
 ),
 
+-- Create an index that would be used for connection in the future.
+crop_data_data_index_creation AS (
+    SELECT
+        *,
+        DENSE_RANK() OVER (ORDER BY CROP_TYPE, GROWTH_STAGE) AS CROP_ID
+    FROM
+        crop_data_with_correct_spelling
+),
+
+
 -- Format columns data types
-final_tb as (
+crop_data_dtype_format as (
     SELECT
         DATE_TRUNC('minute', TO_TIMESTAMP(TIMESTAMP, 'MM/DD/YYYY HH24:MI')) AS TIMESTAMP,
+        CAST(CROP_ID AS VARCHAR(16)) AS CROP_ID,
         CAST(CROP_TYPE AS VARCHAR(16)) AS CROP_TYPE,
         CAST(CROP_YIELD AS NUMERIC(10,2)) AS CROP_YIELD,
         CAST(GROWTH_STAGE AS VARCHAR(16)) AS GROWTH_STAGE,
         CAST(PEST_ISSUE AS VARCHAR(16)) AS PEST_ISSUE
     FROM
-        crop_data_with_correct_spelling
+        crop_data_data_index_creation
 ),
+
+-- Carry out daily summary  
+final_tb AS (
+    SELECT 
+        TIMESTAMP, CROP_ID,
+        CROP_TYPE, GROWTH_STAGE, PEST_ISSUE, 
+        SUM(CROP_YIELD) AS TOTAL_CROP_YIELD 
+    FROM 
+        crop_data_dtype_format
+    GROUP BY 
+        TIMESTAMP, CROP_ID, CROP_TYPE, GROWTH_STAGE, PEST_ISSUE
+)
+
 
 
 
