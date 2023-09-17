@@ -52,26 +52,37 @@ FROM
     weather_data_str_format
 ),
 
+-- Create an index that would be used for connection in the future.
+weather_data_index_creation AS (
+    SELECT
+        *,
+        DENSE_RANK() OVER (ORDER BY WEATHER_CONDITION) AS WEATHER_ID
+    FROM
+        weather_data_spelling_correction
+),
+
 -- format the table dtype
 weather_data_dtype_format AS (
     SELECT
         DATE_TRUNC('minute', TO_TIMESTAMP(TIMESTAMP, 'MM/DD/YYYY HH24:MI')) AS TIMESTAMP,
+        CAST(WEATHER_ID AS INT) AS WEATHER_ID,
         CAST(WEATHER_CONDITION AS VARCHAR(16)) AS WEATHER_CONDITION,
         CAST(WIND_SPEED AS NUMERIC(5,1)) AS WIND_SPEED,
         CAST(PRECIPITATION AS NUMERIC(10,2)) AS PRECIPITATION        
     FROM
-        weather_data_spelling_correction
+        weather_data_index_creation
 ),
 
 -- Convert to Daily equivalent
 final_tb AS (
     SELECT 
-        DATE(TIMESTAMP), WEATHER_CONDITION, AVG(WIND_SPEED) AS AVG_WIND_SPEED, 
+        TIMESTAMP, WEATHER_CONDITION, WEATHER_ID,
+        AVG(WIND_SPEED) AS AVG_WIND_SPEED, 
         AVG(PRECIPITATION) AS AVG_PRECIPITATION
     FROM 
         weather_data_dtype_format
     GROUP BY 
-        DATE(TIMESTAMP), WEATHER_CONDITION
+        TIMESTAMP, WEATHER_CONDITION,  WEATHER_ID
 )
 
 -- query final result

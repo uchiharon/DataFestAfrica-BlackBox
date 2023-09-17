@@ -62,7 +62,7 @@ sensor_data_dtype_format AS(
 -- Convert to daily value
 final_tb AS (
     SELECT 
-        DATE(TIMESTAMP) AS TIMESTAMP, 
+        TIMESTAMP, 
         SENSOR_ID,  
         AVG(TEMPERATURE) AS AVG_TEMPERATURE, 
         AVG(HUMIDITY) AS AVG_HUMIDITY, 
@@ -72,7 +72,7 @@ final_tb AS (
     FROM 
         sensor_data_dtype_format
     GROUP BY 
-        DATE(TIMESTAMP), SENSOR_ID
+        TIMESTAMP, SENSOR_ID
 )
 
 -- query final table

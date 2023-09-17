@@ -60,7 +60,7 @@ sensor_data_dtype_format AS (
 
 final_tb AS (
     SELECT 
-        DATE(TIMESTAMP),
+        TIMESTAMP,
         AVG(SOIL_COMP) AS AVG_SOIL_COMP,
         AVG(SOIL_MOISTURE) AS AVG_SOIL_MOISTURE,
         AVG(SOIL_PH) AS AVG_SOIL_PH,
@@ -70,7 +70,7 @@ final_tb AS (
     FROM
         sensor_data_dtype_format
     GROUP BY
-        DATE(TIMESTAMP)
+        TIMESTAMP
 )
 
 -- query final table

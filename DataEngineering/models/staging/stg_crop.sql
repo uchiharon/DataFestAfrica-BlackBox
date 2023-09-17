@@ -94,14 +94,13 @@ final_tb AS (
 )
 
 
-
-
-
 -- Query final result
 SELECT
     *
 FROM
     final_tb
+
+
 
 -- Create a variable for running test
 {% if var('is_test_run', default=true) %}
