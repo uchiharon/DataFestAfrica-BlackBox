@@ -1,0 +1,244 @@
+models:
+  - name: dim_crop
+    description: >
+      A dimension table that contains information about different crop types and their growth stages.
+    columns:
+      - name: CROP_ID
+        description: Unique identifier for a crop.
+        tests:
+          - unique:
+              severity: error
+          - not_null:
+              severity: error
+      - name: CROP_TYPE
+        description: Type of crop.
+        tests:
+          - not_null:
+              severity: warn
+          - accepted_values:
+              values: ['Cotton','Rice','Tomato','Wheat','Barley','Corn','Potato','Soybean','Sugarcane']
+              severity: warn
+      - name: GROWTH_STAGE
+        description: The current growth stage of the crop.
+        tests:
+          - not_null:
+              severity: warn
+          - accepted_values:
+              values: ['Fruiting','Harvesting','Seedling','Vegetative','Flowering']
+              severity: error
+
+
+  - name: dim_location
+    description: >
+      A dimension table that contains information about sensor locations, including their coordinates and region.
+    columns:
+      - name: SENSOR_ID
+        description: Unique identifier for a sensor.
+        tests:
+          - not_null:
+              severity: error
+      - name: LOCATION_ID
+        description: Unique identifier for a location.
+        tests:
+          - not_null:
+              severity: error
+      - name: LOCATION_NAME
+        description: Name of the location.
+      - name: LATITUDE
+        description: Latitude coordinate of the location.
+      - name: LONGITUDE
+        description: Longitude coordinate of the location.
+      - name: ELEVATION
+        description: Elevation of the location.
+      - name: REGION
+        description: Region where the location is situated.
+        tests:
+          - not_null:
+              severity: warn
+          - accepted_values:
+              values: ['Central','South','North','East','West']
+              severity: error
+
+
+  - name: fact_irrigation
+    description: >
+      A fact table that records irrigation events, including method, water source, and duration.
+    columns:
+      - name: TIMESTAMP
+        description: Timestamp of the irrigation event.
+      - name: SENSOR_ID
+        description: Unique identifier for the sensor recording the irrigation event.
+      - name: LOCATION_ID
+        description: Unique identifier for the location of the irrigation event.
+      - name: IRRIGATION_ID
+        description: Unique identifier for an irrigation event.
+      - name: IRRIGATION_METHOD
+        description: Method used for irrigation.
+        tests:
+          - not_null:
+              severity: warn
+          - accepted_values:
+              values: ['Other','Drip','Sprinkler','Flood']
+              severity: warn
+      - name: WATER_SOURCE
+        description: Source of water for irrigation.
+        tests:
+          - not_null:
+              severity: warn
+          - accepted_values:
+              values: ['Other','River','Pond','Well','Lake']
+              severity: warn
+      - name: TOTAL_IRRIGATION_DURATION_MIN
+        description: Total duration of irrigation in minutes.
+
+
+  - name: dim_pest
+    description: >
+      A dimension table that contains information about different pest types and their severity.
+    columns:
+      - name: PEST_ID
+        description: Unique identifier for a pest.
+        tests:
+          - unique:
+              severity: error
+          - not_null:
+              severity: error
+      - name: PEST_TYPE
+        description: Type of pest.
+        tests:
+          - not_null:
+              severity: warn
+          - accepted_values:
+              values: ['Aphids','Caterpillars','Other','Slugs','Whiteflies','Mites','Fungus']
+              severity: warn
+      - name: PEST_SEVERITY
+        description: Severity level of the pest infestation.
+        tests:
+          - not_null:
+              severity: warn
+          - accepted_values:
+              values: ['Low','High','Medium']
+              severity: error
+      - name: PEST_DESCRIPTION
+        description: Description of the pest.
+        tests:
+          - not_null:
+              severity: warn
+
+
+  - name: fact_yield
+    description: >
+      A fact table that records crop yield, including crop type, pest infestation, and total yield.
+    columns:
+      - name: TIMESTAMP
+        description: Timestamp of the yield measurement.
+      - name: CROP_ID
+        description: Unique identifier for a crop.
+        tests:
+          - not_null:
+              severity: warn
+      - name: PEST_ID
+        description: Unique identifier for a pest infestation (if applicable).
+        tests:
+          - not_null:
+              severity: warn
+      - name: TOTAL_CROP_YIELD
+        description: Total yield of the crop at the given timestamp.
+
+
+  - name: dim_date
+    description: >
+      A dimension table that contains date-related information.
+    columns:
+      - name: TIMESTAMP
+        description: Timestamp.
+        tests:
+          - unique:
+              severity: error
+          - not_null:
+              severity: error
+      - name: HOUR
+        description: Hour of the day.
+        tests:
+          - not_null:
+              severity: warn
+      - name: MINUTE
+        description: Minute of the hour.
+        tests:
+          - not_null:
+              severity: warn
+      - name: MONTH
+        description: Month of the year.
+        tests:
+          - not_null:
+              severity: warn
+      - name: YEAR
+        description: Year.
+        tests:
+          - not_null:
+              severity: warn
+      - name: DAY_OF_WEEK
+        description: Day of the week.
+        tests:
+          - not_null:
+              severity: warn
+      - name: WEEK_OF_YEAR
+        description: Week of the year.
+        tests:
+          - not_null:
+              severity: warn
+
+
+  - name: dim_weather
+    description: >
+      A dimension table that contains information about weather conditions.
+    columns:
+      - name: WEATHER_ID
+        description: Unique identifier for a weather condition.
+        tests:
+          - unique:
+              severity: error
+          - not_null:
+              severity: error
+      - name: WEATHER_CONDITION
+        description: Description of the weather condition.
+        tests:
+          - not_null:
+              severity: warn
+          - accepted_values:
+              values: ['Mist','Rain','Snow','Thunderstorm','Cloudy','Partly Cloudy','Clear','Fog']
+              severity: warn
+
+
+  - name: fact_sensor
+    description: >
+      A fact table that records sensor data, including various environmental factors.
+    columns:
+      - name: timestamp
+        description: Timestamp of sensor data.
+      - name: AVG_TEMPERATURE
+        description: Average temperature reading.
+      - name: AVG_HUMIDITY
+        description: Average humidity reading.
+      - name: AVG_SOIL_MOISTURE
+        description: Average soil moisture reading.
+      - name: AVG_LIGHT_INTENSITY
+        description: Average light intensity reading.
+      - name: AVG_BATTERY_LEVEL
+        description: Average battery level of the sensor.
+      - name: AVG_SOIL_COMP
+        description: Average soil composition.
+      - name: AVG_SOIL_PH
+        description: Average soil pH level.
+      - name: AVG_NITROGEN_LEVEL
+        description: Average nitrogen level in the soil.
+      - name: AVG_PHOSPHORUS_LEVEL
+        description: Average phosphorus level in the soil.
+      - name: AVG_ORGANIC_MATTER
+        description: Average organic matter content in the soil.
+      - name: WEATHER_ID
+        description: Unique identifier for the weather condition during the sensor reading.
+      - name: AVG_WIND_SPEED
+        description: Average wind speed reading.
+      - name: AVG_PRECIPITATION
+        description: Average precipitation reading.
