@@ -1,4 +1,4 @@
-{{config(materialized='view')}}
+{{config(materialized='table')}}
 
 -- Load location data
 WITH loaction_tb AS (
