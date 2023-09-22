@@ -1,15 +1,13 @@
-Welcome to your new dbt project!
+# BlackBox Data Engineering Project
 
-### Using the starter project
+The data exploration process was created out the the workspace below.
+[Weather Data](https://app.snowflake.com/mdnrhoh/dp75670/w3YwD7vpc6hU#query)
+[Location Data](https://app.snowflake.com/mdnrhoh/dp75670/w2Yw6mYWYORb#query)
+[Soil Data](https://app.snowflake.com/mdnrhoh/dp75670/w7b3ozuA25L#query)
+[Irrigation Data](https://app.snowflake.com/mdnrhoh/dp75670/wqgLfMkBbnC#query)
+[Sensor Data](https://app.snowflake.com/mdnrhoh/dp75670/w51LtPUJ7YEv#query)
+[Pest Data](https://app.snowflake.com/mdnrhoh/dp75670/w1W5YJWioCzX#query)
+[Crop Data](https://app.snowflake.com/mdnrhoh/dp75670/w4Ge6S6o6oj8#query)
 
-Try running the following commands:
-- dbt run
-- dbt test
 
-
-### Resources:
-- Learn more about dbt [in the docs](https://docs.getdbt.com/docs/introduction)
-- Check out [Discourse](https://discourse.getdbt.com/) for commonly asked questions and answers
-- Join the [dbt community](http://community.getbdt.com/) to learn from other analytics engineers
-- Find [dbt events](https://events.getdbt.com) near you
-- Check out [the blog](https://blog.getdbt.com/) for the latest news on dbt's development and best practices
+All transformation where carried out on DBT
